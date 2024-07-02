@@ -11,6 +11,7 @@ contract FundMeTest is Test {
 
     function setUp() external {
         number = 2;
+        // us -> FundMeTest -> FundMe
         fundMe = new FundMe();
     }
 
@@ -21,8 +22,15 @@ contract FundMeTest is Test {
         console.log("Hello, world!");
     }
 
-    function testMinimumDollarIsFive() public {
+    function testMinimumDollarIsFive() public view {
         // NOTE： call external public variable use getter function call
         assertEq(fundMe.MINIMUN_USD(), 5e18);
+    }
+
+    function testOwnerIsMessageSender() public view {
+        console.log(fundMe.i_owner());
+        console.log(msg.sender);
+        // assertEq(fundMe.i_owner(), msg.sender);
+        assertEq(fundMe.i_owner(), address(this));
     }
 }
