@@ -2,6 +2,8 @@
 pragma solidity ^0.8.18;
 import {Test, console} from "forge-std/Test.sol";
 import {FundMe} from "../src/FundMe.sol";
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
     // first task: to ensure our FundMe contract operates effectively
@@ -9,10 +11,14 @@ contract FundMeTest is Test {
     uint256 number = 1;
     FundMe fundMe;
 
+    address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
+
     function setUp() external {
         number = 2;
         // us -> FundMeTest -> FundMe
-        fundMe = new FundMe();
+        // fundMe = new FundMe(priceFeedAddress);
+        DeployFundMe deployFundMe = new DeployFundMe();
+        fundMe = deployFundMe.run();
     }
 
     function testDemo() public view {
@@ -30,8 +36,9 @@ contract FundMeTest is Test {
     function testOwnerIsMessageSender() public view {
         console.log(fundMe.i_owner());
         console.log(msg.sender);
-        // assertEq(fundMe.i_owner(), msg.sender);
-        assertEq(fundMe.i_owner(), address(this));
+        // NOTE why?
+        assertEq(fundMe.i_owner(), msg.sender);
+        // assertEq(fundMe.i_owner(), address(this));
     }
 
     function testPriceFeedVersionIsAccurate() public view {

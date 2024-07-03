@@ -6,6 +6,7 @@
 pragma solidity ^0.8.18;
 
 import {PriceConverter} from "./PriceConverter.sol";
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 // Custom Errors in Solidity https://soliditylang.org/blog/2021/04/21/custom-errors/
 error NotOwner();
@@ -22,9 +23,12 @@ contract FundMe {
 
     address public immutable i_owner;
 
+    AggregatorV3Interface private s_priceFeed;
+
     // when contract init run this code
-    constructor() {
+    constructor(address priceFeed) {
         i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
     }
 
     function fund() public payable {
@@ -34,7 +38,7 @@ contract FundMe {
         // require(msg.value > 1 ether, "Didn't send enough ETH");
         // require(getConvertionRate(msg.value) >= MINIMUN_USD, "Didn't send enough ETH");
         require(
-            msg.value.getConvertionRate() >= MINIMUN_USD,
+            msg.value.getConvertionRate(s_priceFeed) >= MINIMUN_USD,
             "Didn't send enough ETH"
         );
         // msg.sender
@@ -82,7 +86,7 @@ contract FundMe {
     }
 
     function getVersion() public view returns (uint256) {
-        return PriceConverter.getVersion();
+        return s_priceFeed.version();
     }
 
     // what happens if somebody send this contract ETH without calling the fund function?
