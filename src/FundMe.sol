@@ -81,6 +81,10 @@ contract FundMe {
         _;
     }
 
+    function getVersion() public view returns (uint256) {
+        return PriceConverter.getVersion();
+    }
+
     // what happens if somebody send this contract ETH without calling the fund function?
     // two  sepesceil function receive() fallback()
     receive() external payable {
