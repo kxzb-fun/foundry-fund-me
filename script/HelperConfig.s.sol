@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 import {Script} from "forge-std/Script.sol";
+import {MockV3Aggregator} from "../test/mock/MockV3Aggregator.sol";
 
 contract HelperConfig {
     // If we are on a local Anvil, we deploy the mocks
@@ -36,5 +37,13 @@ contract HelperConfig {
         return mainnetConfig;
     }
 
-    function getAnvilEthConfig() public pure returns (NetworkConfig memory) {}
+    function getAnvilEthConfig() public pure returns (NetworkConfig memory) {
+        vm.startBroadcast();
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(8, 2000e8);
+        vm.stopBroadcast();
+        NetworkConfig memory anvilConfig = NetworkConfig({
+            priceFeed: address(mockPriceFeed)
+        })
+        return anvilConfig;
+    }
 }
