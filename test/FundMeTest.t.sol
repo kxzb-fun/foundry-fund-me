@@ -45,4 +45,9 @@ contract FundMeTest is Test {
         uint256 version = fundMe.getVersion();
         assertEq(version, 4);
     }
+
+    function testFundFailWithoutEnougthETH() public {
+        vm.expectRevert("Didn't send enough ETH");
+        fundMe.fund(); // <- We send 0 value
+    }
 }
