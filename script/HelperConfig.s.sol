@@ -7,7 +7,8 @@ contract HelperConfig {
     // If we are on a local Anvil, we deploy the mocks
     // Else, grab the existing address from the live network
     NetworkConfig public activeNetowrkConfig;
-
+    uint8 public constant DECIMALS = 8;
+    int256 public constant INITIAL_PRICE = 200e8
     constructor() {
         // https://chainlist.org/?testnets=true&search=sepolia
         if (block.chainid == 11155111) {
@@ -39,7 +40,7 @@ contract HelperConfig {
 
     function getAnvilEthConfig() public pure returns (NetworkConfig memory) {
         vm.startBroadcast();
-        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(8, 2000e8);
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(DECIMALS, INITIAL_PRICE);
         vm.stopBroadcast();
         NetworkConfig memory anvilConfig = NetworkConfig({
             priceFeed: address(mockPriceFeed)
