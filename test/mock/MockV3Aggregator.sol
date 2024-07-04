@@ -12,6 +12,7 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/Ag
  * its answer is unimportant
  */
 contract MockV3Aggregator is AggregatorV3Interface {
+    // NOTE: change version on local
     uint256 public constant version = 4;
 
     uint8 public decimals;

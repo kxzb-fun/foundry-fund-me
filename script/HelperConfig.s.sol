@@ -3,12 +3,13 @@ pragma solidity ^0.8.19;
 import {Script} from "forge-std/Script.sol";
 import {MockV3Aggregator} from "../test/mock/MockV3Aggregator.sol";
 
-contract HelperConfig {
+contract HelperConfig is Script {
     // If we are on a local Anvil, we deploy the mocks
     // Else, grab the existing address from the live network
     NetworkConfig public activeNetowrkConfig;
     uint8 public constant DECIMALS = 8;
-    int256 public constant INITIAL_PRICE = 200e8
+    int256 public constant INITIAL_PRICE = 200e8;
+
     constructor() {
         // https://chainlist.org/?testnets=true&search=sepolia
         if (block.chainid == 11155111) {
@@ -16,7 +17,7 @@ contract HelperConfig {
         } else if (block.chainid == 1) {
             activeNetowrkConfig = getMainnetEthConfig();
         } else {
-            activeNetowrkConfig = getAnvilEthConfig();
+            activeNetowrkConfig = getOrCreateAnvilEthConfig();
         }
     }
 
@@ -38,13 +39,23 @@ contract HelperConfig {
         return mainnetConfig;
     }
 
-    function getAnvilEthConfig() public pure returns (NetworkConfig memory) {
+    // Error (2527): Function declared as pure, but this expression (potentially) reads from the environment or state and thus requires "view".
+    // function getOrCreateAnvilEthConfig() public pure returns
+    function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory) {
+        // Not set a new one, if the address not a 0 that say we already set it
+        if (activeNetowrkConfig.priceFeed != address(0)) {
+            return activeNetowrkConfig;
+        }
+
         vm.startBroadcast();
-        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(DECIMALS, INITIAL_PRICE);
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(
+            DECIMALS,
+            INITIAL_PRICE
+        );
         vm.stopBroadcast();
         NetworkConfig memory anvilConfig = NetworkConfig({
             priceFeed: address(mockPriceFeed)
-        })
+        });
         return anvilConfig;
     }
 }
