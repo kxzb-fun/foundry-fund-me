@@ -18,8 +18,9 @@ contract FundMe {
     using PriceConverter for uint256;
     // Immutability and constants
     uint256 public constant MINIMUN_USD = 5e18;
-    address[] public funders;
-    mapping(address funder => uint256 amountFuned) public addressToAmountFuned;
+    address[] private s_funders;
+    mapping(address funder => uint256 amountFuned)
+        private s_addressToAmountFunded;
 
     address public immutable i_owner;
 
@@ -42,24 +43,24 @@ contract FundMe {
             "Didn't send enough ETH"
         );
         // msg.sender
-        funders.push(msg.sender);
-        addressToAmountFuned[msg.sender] =
-            addressToAmountFuned[msg.sender] +
+        s_funders.push(msg.sender);
+        s_addressToAmountFunded[msg.sender] =
+            s_addressToAmountFunded[msg.sender] +
             msg.value;
     }
 
     function withdraw() public onlyOwner {
         for (
             uint256 funderIndex = 0;
-            funderIndex < funders.length;
+            funderIndex < s_funders.length;
             funderIndex++
         ) {
-            // get funders address
-            address funder = funders[funderIndex];
-            addressToAmountFuned[funder] = 0;
+            // get s_funders address
+            address funder = s_funders[funderIndex];
+            s_addressToAmountFunded[funder] = 0;
         }
         // reset array
-        funders = new address[](0);
+        s_funders = new address[](0);
         // withdraw the funds
         // https://solidity-by-example.org/sending-ether/  transfer send call
 
