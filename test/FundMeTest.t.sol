@@ -10,6 +10,11 @@ contract FundMeTest is Test {
     // setup function will deploy our contract
     uint256 number = 1;
     FundMe fundMe;
+    // NOTE: why ? Error (8349): Initial value for constant variable has to be compile-time constant.
+    // address constant USER = makeAddr("user");
+    address USER = makeAddr("user");
+    uint256 constant SEND_VALUE = 0.1 ether;
+    uint256 constant STARTING_BALANCE = 10 ether;
 
     address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
 
@@ -19,6 +24,8 @@ contract FundMeTest is Test {
         // fundMe = new FundMe(priceFeedAddress);
         DeployFundMe deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run();
+        // EvmError: OutOfFunds
+        vm.deal(USER, STARTING_BALANCE);
     }
 
     function testDemo() public view {
@@ -52,11 +59,13 @@ contract FundMeTest is Test {
     }
 
     function testFundUpdatesFundDataStrucutre() public {
-        fundMe.fund{value: 10 ether}();
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
         // [FAIL. Reason: assertion failed: 0 != 10000000000000000000] testFundUpdatesFundDataStrucutre() (gas: 99169)
         // uint256 amountFunded = fundMe.getAddressToAmountFunded(msg.sender);
         // PASS
-        uint256 amountFunded = fundMe.getAddressToAmountFunded(address(this));
-        assertEq(amountFunded, 10 ether);
+        // uint256 amountFunded = fundMe.getAddressToAmountFunded(address(this));
+        uint256 amountFunded = fundMe.getAddressToAmountFunded(USER);
+        assertEq(amountFunded, SEND_VALUE);
     }
 }
