@@ -80,7 +80,8 @@ contract FundMe {
         // first solution
         // require(i_owner == msg.sender, "Must be owner!");
         // section solution
-        if (i_owner == msg.sender) {
+        // FIXED: i write i_owner == msg.sender before
+        if (i_owner != msg.sender) {
             revert NotOwner();
         }
         _;
