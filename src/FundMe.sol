@@ -22,7 +22,7 @@ contract FundMe {
     mapping(address funder => uint256 amountFuned)
         private s_addressToAmountFunded;
 
-    address public immutable i_owner;
+    address private immutable i_owner;
 
     AggregatorV3Interface private s_priceFeed;
 
@@ -110,5 +110,9 @@ contract FundMe {
 
     function getFunder(uint256 index) public view returns (address) {
         return s_funders[index];
+    }
+
+    function getOwner() public view returns (address) {
+        return i_owner;
     }
 }
