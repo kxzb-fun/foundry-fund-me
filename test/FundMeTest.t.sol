@@ -50,4 +50,13 @@ contract FundMeTest is Test {
         vm.expectRevert("Didn't send enough ETH");
         fundMe.fund(); // <- We send 0 value
     }
+
+    function testFundUpdatesFundDataStrucutre() public {
+        fundMe.fund{value: 10 ether}();
+        // [FAIL. Reason: assertion failed: 0 != 10000000000000000000] testFundUpdatesFundDataStrucutre() (gas: 99169)
+        // uint256 amountFunded = fundMe.getAddressToAmountFunded(msg.sender);
+        // PASS
+        uint256 amountFunded = fundMe.getAddressToAmountFunded(address(this));
+        assertEq(amountFunded, 10 ether);
+    }
 }
