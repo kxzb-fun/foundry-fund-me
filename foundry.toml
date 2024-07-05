@@ -8,3 +8,4 @@ solc = "/usr/local/bin/solc"
 remappings = [
     "@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/",
 ]
+ffi = true # this means that you're going to allow foundry to run command directly on your mechine
